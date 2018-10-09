@@ -4,6 +4,7 @@ requires 'perl', '5.8.5';
 
 requires 'Moose';
 requires 'Net::DNS::Resolver';
+requires 'LWP::UserAgent';
 requires 'namespace::autoclean';
 requires 'strict';
 
