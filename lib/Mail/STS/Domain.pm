@@ -98,7 +98,7 @@ my $RECORDS = {
   },
   'tlsrpt' => {
     type => 'TXT',
-    name => sub { '_smtp._tcp.'.shift },
+    name => sub { '_smtp._tls.'.shift },
   },
 };
 
