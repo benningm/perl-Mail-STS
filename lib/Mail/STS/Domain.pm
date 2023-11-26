@@ -127,7 +127,30 @@ foreach my $record (keys %$RECORDS) {
     default => sub {
       my $self = shift;
       my $domainname = $name->($self->$from);
-      return $self->resolver->query($domainname, $type);
+      my $cur_domainname = $domainname;
+      my $answer = undef;
+      my $depth = 0;
+      my $max_depth = 20;
+      # for CNAMEs retry query with cname target aka follow CNAMEs
+      while (1) {
+        $answer = $self->resolver->query($cur_domainname, $type);
+        if (! $answer) {
+          last;
+        }
+        my @rr = $answer->answer;
+        if ($rr[0]->type ne 'CNAME') {
+          last;
+        }
+        # answer IS a CNAME, increase depth count
+        $depth += 1;
+        if ($depth > $max_depth) {
+          $answer = undef;
+          last;
+        }
+        $cur_domainname = $rr[0]->cname;
+        # now loop to next query
+      }
+      return $answer;
     },
     clearer => "_reset_${accessor}",
   );

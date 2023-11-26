@@ -9,7 +9,18 @@ requires 'fields';
 
 sub new_from_string {
   my ($class, $string) = @_;
-  my %kv = map { split(/=/,$_,2) } split(/\s*;\s*/, $string);
+  my @assignments = split(/\s*;\s*/, $string);
+  my %kv;
+  foreach my $assignment (@assignments) {
+    if ($assignment !~ /=/) {
+      next;
+    }
+    my ($key, $value) = split(/=/, $assignment, 2);
+    $kv{$key} = $value;
+  }
+  if (! keys(%kv)) {
+    return;
+  }
   return $class->new(%kv);
 }
 
